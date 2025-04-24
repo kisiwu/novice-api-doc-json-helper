@@ -21,7 +21,7 @@
     "openapi",
     "postman",
     "swagger",
-    "novice"
+    "json"
   ],
   "dependencies": {
     "@novice1/api-doc-generator": "^0.2.8",

@@ -38,7 +38,6 @@ export class OpenAPIJsonHelper implements OpenAPIHelperInterface {
         if (isRequired) {
             this._isRequired = isRequired
         }
-        console.log(this._schema)
     }
 
     getFirstItem(): OpenAPIJsonHelper | undefined {
