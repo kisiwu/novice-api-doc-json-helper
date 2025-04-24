@@ -95,6 +95,52 @@ const router = routing()
 //...
 ```
 
+## Postman Specification
+
+```ts
+import { 
+  Postman 
+} from '@novice1/api-doc-generator';
+import { 
+    PostmanJsonHelper 
+} from '@novice1/api-doc-json-helper';
+import routing from '@novice1/routing';
+
+PostmanJsonHelper.schemaProperty = 'jsonSchemas'
+
+const postman = new Postman(PostmanJsonHelper);
+
+const router = routing()
+  .get({
+    name: 'Main app',
+    path: '/app',
+    auth: true,
+    tags: ['default'],
+    parameters: {
+        
+        jsonSchemas: {
+            query: {
+                '$schema': 'http://json-schema.org/draft-07/schema#',
+                type: 'object',
+                properties: {
+                    version: {
+                        type: 'string',
+                        description: 'version number',
+                        enum: ['1','2','3'],
+                        default: '2'
+                    }
+                }
+            }
+        }
+
+    }
+}, function (req, res) {
+    res.json(req.query.version)
+});
+
+//...
+```
+
 ## References
 
 - [@novice1/api-doc-generator](https://kisiwu.github.io/novice-api-doc-generator/latest/)
