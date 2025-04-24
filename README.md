@@ -1,1 +1,1 @@
-# novice-api-doc-json-helper
+# @novice1/api-doc-json-helper
