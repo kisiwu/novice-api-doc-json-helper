@@ -51,7 +51,7 @@ const router = routing()
 
 ### Recommended
 
-Defining the property containing your schemas is [recommended](https://github.com/kisiwu/novice-validator-json?tab=readme-ov-file#good-practices).
+It's [recommended](https://github.com/kisiwu/novice-validator-json?tab=readme-ov-file#best-practices) to keep your schemas isolated from other properties of `parameters`.
 
 ```ts
 import { 
