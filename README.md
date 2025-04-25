@@ -29,14 +29,15 @@ const router = routing()
     tags: ['default'],
     parameters: {
         query: {
-            '$schema': 'http://json-schema.org/draft-07/schema#',
+            $schema: 'http://json-schema.org/draft-07/schema#',
             type: 'object',
             properties: {
                 version: {
                     type: 'string',
                     description: 'version number',
                     enum: ['1','2','3'],
-                    default: '2'
+                    default: '2',
+                    nullable: true
                 }
             }
         }
@@ -75,14 +76,15 @@ const router = routing()
         // recommended
         jsonSchemas: {
             query: {
-                '$schema': 'http://json-schema.org/draft-07/schema#',
+                $schema: 'http://json-schema.org/draft-07/schema#',
                 type: 'object',
                 properties: {
                     version: {
                         type: 'string',
                         description: 'version number',
                         enum: ['1','2','3'],
-                        default: '2'
+                        default: '2',
+                        nullable: true
                     }
                 }
             }
@@ -120,14 +122,15 @@ const router = routing()
         
         jsonSchemas: {
             query: {
-                '$schema': 'http://json-schema.org/draft-07/schema#',
+                $schema: 'http://json-schema.org/draft-07/schema#',
                 type: 'object',
                 properties: {
                     version: {
                         type: 'string',
                         description: 'version number',
                         enum: ['1','2','3'],
-                        default: '2'
+                        default: '2',
+                        nullable: true
                     }
                 }
             }
