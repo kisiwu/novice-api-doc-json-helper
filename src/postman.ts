@@ -6,25 +6,11 @@ export class PostmanJsonHelper implements PostmanHelperInterface {
     protected _schema: object;
     protected _isRequired = false
 
-    static schemaProperty: string = ''
-
-    constructor(schema: object | unknown = {}, isRequired?: boolean) {
+    constructor({ value: schema = {} }: { value?: object | unknown }, isRequired?: boolean) {
         this._schema = {}
         if (schema && typeof schema === 'object') {
             const s = schema as Record<string, unknown>
             this._schema = s
-            if (PostmanJsonHelper.schemaProperty && PostmanJsonHelper.schemaProperty in s) {
-                const s2 = s[PostmanJsonHelper.schemaProperty]
-                if (s2 && typeof s2 === 'object') {
-                    this._schema = s2
-                }
-            }
-            if (!('type' in this._schema)) {
-                this._schema = {
-                    type: 'object',
-                    properties: this._schema
-                }
-            }
         }
         if (isRequired) {
             this._isRequired = isRequired
@@ -35,7 +21,7 @@ export class PostmanJsonHelper implements PostmanHelperInterface {
         const schema = this._schema
 
         if ('items' in schema && typeof schema.items === 'object') {
-            return new PostmanJsonHelper(schema.items)
+            return new PostmanJsonHelper({ value: schema.items })
         }
 
         return
@@ -47,7 +33,7 @@ export class PostmanJsonHelper implements PostmanHelperInterface {
             const properties: Record<string, unknown> = schema.properties as Record<string, unknown>
             for (const p in properties) {
                 const isRequired: boolean = 'required' in schema && Array.isArray(schema.required) && schema.required.includes(p)
-                r[p] = new PostmanJsonHelper(properties[p], isRequired)
+                r[p] = new PostmanJsonHelper({ value: properties[p] }, isRequired)
             }
         }
         return r;
@@ -57,7 +43,7 @@ export class PostmanJsonHelper implements PostmanHelperInterface {
         const schema = this._schema
         if ('oneOf' in schema && Array.isArray(schema.oneOf)) {
             for (const p of schema.oneOf) {
-                r.push(new PostmanJsonHelper(p))
+                r.push(new PostmanJsonHelper({ value: p }))
             }
         }
         return r
@@ -66,7 +52,12 @@ export class PostmanJsonHelper implements PostmanHelperInterface {
         return
     }
     isValid(): boolean {
-        return !!(this._schema && typeof this._schema === 'object')
+        return !!(this._schema && typeof this._schema === 'object' &&
+            (
+                ('type' in this._schema && typeof this._schema.type === 'string') ||
+                ('oneOf' in this._schema && Array.isArray(this._schema.oneOf))
+
+            ))
     }
     getType(): string {
         let r = ''
