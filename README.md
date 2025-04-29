@@ -19,7 +19,7 @@ import {
 } from '@novice1/api-doc-json-helper';
 import routing from '@novice1/routing';
 
-const openapi = new OpenAPI(OpenAPIJsonHelper);
+const openapi = new OpenAPI({ helperClass: OpenAPIJsonHelper });
 
 const router = routing()
   .get({
@@ -62,9 +62,10 @@ import {
 } from '@novice1/api-doc-json-helper';
 import routing from '@novice1/routing';
 
-OpenAPIJsonHelper.schemaProperty = 'jsonSchemas' // recommended
-
-const openapi = new OpenAPI(OpenAPIJsonHelper);
+const openapi = new OpenAPI({ 
+    helperClass: OpenAPIJsonHelper, 
+    helperSchemaProperty: 'schema' // recommended 
+});
 
 const router = routing()
   .get({
@@ -74,7 +75,7 @@ const router = routing()
     tags: ['default'],
     parameters: {
         // recommended
-        jsonSchemas: {
+        schema: {
             query: {
                 $schema: 'http://json-schema.org/draft-07/schema#',
                 type: 'object',
@@ -94,7 +95,7 @@ const router = routing()
     res.json(req.query.version)
 });
 
-//...
+// ...
 ```
 
 ## Postman Specification
@@ -108,9 +109,10 @@ import {
 } from '@novice1/api-doc-json-helper';
 import routing from '@novice1/routing';
 
-PostmanJsonHelper.schemaProperty = 'jsonSchemas'
-
-const postman = new Postman(PostmanJsonHelper);
+const postman = new Postman({ 
+    helperClass: PostmanJsonHelper, 
+    helperSchemaProperty: 'schema' 
+});
 
 const router = routing()
   .get({
@@ -119,8 +121,7 @@ const router = routing()
     auth: true,
     tags: ['default'],
     parameters: {
-        
-        jsonSchemas: {
+        schema: {
             query: {
                 $schema: 'http://json-schema.org/draft-07/schema#',
                 type: 'object',
@@ -141,7 +142,7 @@ const router = routing()
     res.json(req.query.version)
 });
 
-//...
+// ...
 ```
 
 ## References
