@@ -55,8 +55,8 @@ export class PostmanJsonHelper implements PostmanHelperInterface {
         return !!(this._schema && typeof this._schema === 'object' &&
             (
                 ('type' in this._schema && typeof this._schema.type === 'string') ||
-                ('oneOf' in this._schema && Array.isArray(this._schema.oneOf))
-
+                ('oneOf' in this._schema && Array.isArray(this._schema.oneOf)) || 
+                ('anyOf' in this._schema && Array.isArray(this._schema.anyOf))
             ))
     }
     getType(): string {
@@ -119,6 +119,12 @@ export class PostmanJsonHelper implements PostmanHelperInterface {
         let r: unknown[] = []
         if ('enum' in this._schema && Array.isArray(this._schema.enum)) {
             r = this._schema.enum
+        } else if ('anyOf' in this._schema && Array.isArray(this._schema.anyOf)) {
+            for (const p of this._schema.anyOf) {
+                if (p && typeof p === 'object' && 'const' in p) {
+                    r.push(p.const)
+                }
+            }
         }
         return r;
     }
