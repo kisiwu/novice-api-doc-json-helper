@@ -1,12 +1,13 @@
-import { PostmanHelperInterface } from '@novice1/api-doc-generator';
-import { XMLObject } from '@novice1/api-doc-generator/lib/generators/openapi/definitions';
+import { BaseHelperInterface } from '@novice1/api-doc-generator/lib/helpers/baseHelper';
 
-
-export class PostmanJsonHelper implements PostmanHelperInterface {
+/**
+ * JSON schema (draft-07) helper for \@novice1/api-doc-generator
+ */
+export abstract class BaseJsonHelper implements BaseHelperInterface {
     protected _schema: object;
     protected _isRequired = false
 
-    constructor({ value: schema = {} }: { value?: object | unknown }, isRequired?: boolean) {
+    constructor({ value: schema = {} }: { value?: object | unknown, isRoot?: boolean }, isRequired?: boolean) {
         this._schema = {}
         if (schema && typeof schema === 'object') {
             const s = schema as Record<string, unknown>
@@ -16,43 +17,30 @@ export class PostmanJsonHelper implements PostmanHelperInterface {
             this._isRequired = isRequired
         }
     }
-    getFirstItem(): PostmanJsonHelper | undefined {
 
-        const schema = this._schema
+    protected hasMeta(v: string): boolean {
+        if (!this.isValid()) {
+            return false;
+        }
+        return 'meta' in this._schema &&
+            this._schema.meta &&
+            typeof this._schema.meta === 'object' &&
+            v in this._schema.meta && typeof (this._schema.meta as Record<PropertyKey, unknown>)[v] !== 'undefined' ?
+            true : false;
+    }
 
-        if ('items' in schema && typeof schema.items === 'object') {
-            return new PostmanJsonHelper({ value: schema.items })
+    protected getMeta(v: string): unknown {
+        if (!this.hasMeta(v)) {
+            return;
         }
+        return 'meta' in this._schema &&
+            this._schema.meta &&
+            typeof this._schema.meta === 'object' &&
+            v in this._schema.meta && (this._schema.meta as Record<PropertyKey, unknown>)[v];
+    }
 
-        return
-    }
-    getChildren(): Record<string, PostmanJsonHelper> {
-        const r: Record<string, PostmanJsonHelper> = {};
-        const schema = this._schema
-        if ('properties' in schema && typeof schema.properties === 'object' && schema.properties) {
-            const properties: Record<string, unknown> = schema.properties as Record<string, unknown>
-            for (const p in properties) {
-                const isRequired: boolean = 'required' in schema && Array.isArray(schema.required) && schema.required.includes(p)
-                r[p] = new PostmanJsonHelper({ value: properties[p] }, isRequired)
-            }
-        }
-        return r;
-    }
-    getAlternatives(): PostmanJsonHelper[] {
-        const r: PostmanJsonHelper[] = []
-        const schema = this._schema
-        if ('oneOf' in schema && Array.isArray(schema.oneOf)) {
-            for (const p of schema.oneOf) {
-                r.push(new PostmanJsonHelper({ value: p }))
-            }
-        }
-        return r
-    }
-    getXml?(): XMLObject | undefined {
-        return
-    }
     isValid(): boolean {
-        return !!(this._schema && typeof this._schema === 'object' &&
+        return !!(this._schema && typeof this._schema === 'object' && 
             (
                 ('type' in this._schema && typeof this._schema.type === 'string') ||
                 ('oneOf' in this._schema && Array.isArray(this._schema.oneOf)) || 
@@ -165,6 +153,11 @@ export class PostmanJsonHelper implements PostmanHelperInterface {
         return
     }
     getUnit(): string {
+        const unit: unknown = this.getMeta('unit')
+        if (typeof unit === 'string') {
+            return unit
+        }
         return ''
     }
+
 }

@@ -1,2 +1,2 @@
-export * from './openapi'
-export * from './postman'
+export * from './OpenAPIJsonHelper'
+export * from './PostmanJsonHelper'

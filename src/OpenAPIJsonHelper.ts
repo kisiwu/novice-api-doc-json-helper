@@ -1,0 +1,140 @@
+import { OpenAPIHelperInterface } from '@novice1/api-doc-generator';
+import {
+    AdditionalProperties,
+    DiscriminatorObject,
+    XMLObject,
+    ExampleObject,
+    ReferenceObject,
+    EncodingObject
+} from '@novice1/api-doc-generator/lib/generators/openapi/definitions';
+import { BaseJsonHelper } from './BaseJsonHelper';
+
+/**
+ * JSON schema (draft-07) helper for \@novice1/api-doc-generator
+ */
+export class OpenAPIJsonHelper extends BaseJsonHelper implements OpenAPIHelperInterface {
+
+
+    getFirstItem(): OpenAPIJsonHelper | undefined {
+
+        const schema = this._schema
+
+        if ('items' in schema && typeof schema.items === 'object') {
+            return new OpenAPIJsonHelper({ value: schema.items })
+        }
+
+        return
+    }
+    getChildren(): Record<string, OpenAPIJsonHelper> {
+        const r: Record<string, OpenAPIJsonHelper> = {};
+        const schema = this._schema
+        if ('properties' in schema && typeof schema.properties === 'object' && schema.properties) {
+            const properties: Record<string, unknown> = schema.properties as Record<string, unknown>
+            for (const p in properties) {
+                const isRequired: boolean = 'required' in schema && Array.isArray(schema.required) && schema.required.includes(p)
+                r[p] = new OpenAPIJsonHelper({ value: properties[p] }, isRequired)
+            }
+        }
+        return r;
+    }
+    getAlternatives(): OpenAPIJsonHelper[] {
+        const r: OpenAPIJsonHelper[] = []
+        const schema = this._schema
+        if ('oneOf' in schema && Array.isArray(schema.oneOf)) {
+            for (const p of schema.oneOf) {
+                r.push(new OpenAPIJsonHelper({ value: p }))
+            }
+        }
+        return r
+    }
+    hasStyle(): boolean {
+        return typeof this.getMeta('style') === 'string'
+    }
+    getStyle(): string {
+        const style = this.getMeta('style')
+        if (typeof style === 'string') {
+            return style
+        }
+        return ''
+    }
+    hasAdditionalProperties(): boolean {
+        const schema = this._schema
+        return !!('additionalProperties' in schema && schema.additionalProperties)
+    }
+    getAdditionalProperties(): AdditionalProperties {
+        const schema = this._schema
+        return 'additionalProperties' in schema && (schema.additionalProperties as AdditionalProperties)
+    }
+    hasRef(): boolean {
+        const schema = this._schema
+        return !!('$ref' in schema && typeof schema.$ref === 'string')
+    }
+    getRef(): string | undefined {
+        const schema = this._schema
+        return '$ref' in schema && typeof schema.$ref === 'string' ? schema.$ref : undefined
+    }
+    hasDiscriminator(): boolean {
+        const metaDiscriminator = this.getMeta('discriminator')
+        return !!('discriminator' in this._schema &&
+            this._schema.discriminator &&
+            typeof this._schema.discriminator === 'object' &&
+            'propertyName' in this._schema.discriminator &&
+            this._schema.discriminator.propertyName &&
+            typeof this._schema.discriminator.propertyName === 'string') ||
+            !!(metaDiscriminator &&
+                typeof metaDiscriminator === 'object' &&
+                'propertyName' in metaDiscriminator &&
+                metaDiscriminator.propertyName &&
+                typeof metaDiscriminator.propertyName === 'string')
+    }
+    getDiscriminator(): DiscriminatorObject | undefined {
+        const metaDiscriminator = this.getMeta('discriminator')
+        return 'discriminator' in this._schema && 
+            this._schema.discriminator &&
+            typeof this._schema.discriminator === 'object' &&
+            'propertyName' in this._schema.discriminator && 
+            this._schema.discriminator.propertyName &&
+            typeof this._schema.discriminator.propertyName === 'string' ? 
+                (this._schema.discriminator as DiscriminatorObject) : 
+                metaDiscriminator && 
+                typeof metaDiscriminator === 'object' &&
+                'propertyName' in metaDiscriminator && 
+                metaDiscriminator.propertyName &&
+                typeof metaDiscriminator.propertyName === 'string' ? 
+                (metaDiscriminator as DiscriminatorObject) : undefined
+    }
+    hasXml(): boolean {
+        const xmlMeta = this.getMeta('xml')
+        return !!(xmlMeta && typeof xmlMeta === 'object')
+    }
+    getXml(): XMLObject | undefined {
+        return this.getMeta('xml') as XMLObject | undefined
+    }
+    hasExamples?(): boolean {
+        const schema = this._schema
+        return !!('examples' in schema && Array.isArray(schema.examples))
+    }
+    getExamples?(): Record<string, ExampleObject | ReferenceObject> | undefined {
+        const schema = this._schema
+        if ('examples' in schema && Array.isArray(schema.examples)) {
+            const r: Record<string, ExampleObject | ReferenceObject> = {};
+            let i = 1
+            for (const value of schema.examples) {
+                r[`${i}`] = {
+                    value
+                }
+                i++
+            }
+            return r
+        }
+        return
+    }
+    hasEncoding?(): boolean {
+        const encodingMeta = this.getMeta('encoding')
+        return !!(encodingMeta && typeof encodingMeta === 'object')
+    }
+    getEncoding?(): Record<string, EncodingObject> | undefined {
+        return this.getMeta('encoding') as Record<string, EncodingObject> | undefined
+    }
+
+}
