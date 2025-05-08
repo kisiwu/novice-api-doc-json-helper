@@ -98,11 +98,11 @@ export class OpenAPIJsonHelper extends BaseJsonHelper implements OpenAPIHelperIn
     getXml(): XMLObject | undefined {
         return this.getMeta('xml') as XMLObject | undefined
     }
-    hasExamples?(): boolean {
+    hasExamples(): boolean {
         const schema = this._schema
         return !!('examples' in schema && Array.isArray(schema.examples))
     }
-    getExamples?(): Record<string, ExampleObject | ReferenceObject> | undefined {
+    getExamples(): Record<string, ExampleObject | ReferenceObject> | undefined {
         const schema = this._schema
         if ('examples' in schema && Array.isArray(schema.examples)) {
             const r: Record<string, ExampleObject | ReferenceObject> = {};
@@ -117,11 +117,11 @@ export class OpenAPIJsonHelper extends BaseJsonHelper implements OpenAPIHelperIn
         }
         return
     }
-    hasEncoding?(): boolean {
+    hasEncoding(): boolean {
         const encodingMeta = this.getMeta('encoding')
         return !!(encodingMeta && typeof encodingMeta === 'object')
     }
-    getEncoding?(): Record<string, EncodingObject> | undefined {
+    getEncoding(): Record<string, EncodingObject> | undefined {
         return this.getMeta('encoding') as Record<string, EncodingObject> | undefined
     }
 
