@@ -74,21 +74,14 @@ export class OpenAPIJsonHelper extends BaseJsonHelper implements OpenAPIHelperIn
         return '$ref' in schema && typeof schema.$ref === 'string' ? schema.$ref : undefined
     }
     hasDiscriminator(): boolean {
-        const metaDiscriminator = this.getMeta('discriminator')
         return !!('discriminator' in this._schema &&
             this._schema.discriminator &&
             typeof this._schema.discriminator === 'object' &&
             'propertyName' in this._schema.discriminator &&
             this._schema.discriminator.propertyName &&
-            typeof this._schema.discriminator.propertyName === 'string') ||
-            !!(metaDiscriminator &&
-                typeof metaDiscriminator === 'object' &&
-                'propertyName' in metaDiscriminator &&
-                metaDiscriminator.propertyName &&
-                typeof metaDiscriminator.propertyName === 'string')
+            typeof this._schema.discriminator.propertyName === 'string')
     }
     getDiscriminator(): DiscriminatorObject | undefined {
-        const metaDiscriminator = this.getMeta('discriminator')
         return 'discriminator' in this._schema && 
             this._schema.discriminator &&
             typeof this._schema.discriminator === 'object' &&
@@ -96,12 +89,7 @@ export class OpenAPIJsonHelper extends BaseJsonHelper implements OpenAPIHelperIn
             this._schema.discriminator.propertyName &&
             typeof this._schema.discriminator.propertyName === 'string' ? 
                 (this._schema.discriminator as DiscriminatorObject) : 
-                metaDiscriminator && 
-                typeof metaDiscriminator === 'object' &&
-                'propertyName' in metaDiscriminator && 
-                metaDiscriminator.propertyName &&
-                typeof metaDiscriminator.propertyName === 'string' ? 
-                (metaDiscriminator as DiscriminatorObject) : undefined
+                 undefined
     }
     hasXml(): boolean {
         const xmlMeta = this.getMeta('xml')
