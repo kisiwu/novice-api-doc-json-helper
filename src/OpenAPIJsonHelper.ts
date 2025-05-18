@@ -67,11 +67,12 @@ export class OpenAPIJsonHelper extends BaseJsonHelper implements OpenAPIHelperIn
     }
     hasRef(): boolean {
         const schema = this._schema
-        return !!('$ref' in schema && typeof schema.$ref === 'string')
+        return !!('$ref' in schema && typeof schema.$ref === 'string') || !!('$id' in schema && typeof schema.$id === 'string')
     }
     getRef(): string | undefined {
         const schema = this._schema
-        return '$ref' in schema && typeof schema.$ref === 'string' ? schema.$ref : undefined
+        return '$ref' in schema && typeof schema.$ref === 'string' ? schema.$ref :
+            '$id' in schema && typeof schema.$id === 'string' ? schema.$id : undefined
     }
     hasDiscriminator(): boolean {
         return !!('discriminator' in this._schema &&
