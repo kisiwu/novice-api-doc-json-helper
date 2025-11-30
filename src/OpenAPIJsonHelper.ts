@@ -5,7 +5,8 @@ import {
     XMLObject,
     ExampleObject,
     ReferenceObject,
-    EncodingObject
+    EncodingObject,
+    SchemaObject
 } from '@novice1/api-doc-generator/lib/generators/openapi/definitions';
 import { BaseJsonHelper } from './BaseJsonHelper';
 
@@ -125,5 +126,17 @@ export class OpenAPIJsonHelper extends BaseJsonHelper implements OpenAPIHelperIn
     getEncoding(): Record<string, EncodingObject> | undefined {
         return this.getMeta('encoding') as Record<string, EncodingObject> | undefined
     }
-
+    getAnyOf(): SchemaObject[] {
+        let r: SchemaObject[] = []
+        if ('enum' in this._schema && Array.isArray(this._schema.enum)) {
+            r = this._schema.enum
+        } else if ('anyOf' in this._schema && Array.isArray(this._schema.anyOf)) {
+            for (const p of this._schema.anyOf) {
+                if (p && typeof p === 'object') {
+                    r.push(p)
+                }
+            }
+        }
+        return r;
+    }
 }
